@@ -1,0 +1,5 @@
+﻿  すごろく.cpp
+C:\Users\Pikus\OneDrive\デスクトップ\C++,DxLib,Java\すごろく\すごろく.cpp(58,47): warning C4267: '引数': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+C:\Users\Pikus\OneDrive\デスクトップ\C++,DxLib,Java\すごろく\すごろく.cpp(133,31): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\Pikus\OneDrive\デスクトップ\C++,DxLib,Java\すごろく\すごろく.cpp(137,32): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
+  すごろく.vcxproj -> C:\Users\Pikus\OneDrive\デスクトップ\C++,DxLib,Java\すごろく\x64\Debug\すごろく.exe
