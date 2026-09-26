@@ -19,6 +19,7 @@ const int CHARA_X = 0;
 const int CHARA_Y = 285;
 
 enum {TITLE,PLAY,DICE,MOVE,RESULT};
+enum { WAL, PRE, DIS, SUP };
 
 /*色設定*/
 struct Color {
@@ -89,13 +90,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int BGM= LoadSoundMem("MUSIC/BGM.mp3");
 	int CLICK = LoadSoundMem("MUSIC/CLICK.wav");
 	int WALK = LoadSoundMem("MUSIC/WALK.wav");
+	int PRESED = LoadSoundMem("MUSIC/PRE.wav");
+	int DISAPOINTED = LoadSoundMem("MUSIC/DIS.wav");
+	int SUPREASED = LoadSoundMem("MUSIC/SUP.wav");
 
-	int CHARA[8] = {
+	int CHARA1[4] = {
 
 		LoadGraph("CHARA1/CHARA1_WAL.png"),
 		LoadGraph("CHARA1/CHARA1_PRE.png"),
 		LoadGraph("CHARA1/CHARA1_DIS.png"),
 		LoadGraph("CHARA1/CHARA1_SUP.png"),
+
+	};
+
+	int CHARA2[4] = {
 
 		LoadGraph("CHARA2/CHARA2_WAL.png"),
 		LoadGraph("CHARA2/CHARA2_PRE.png"),
@@ -166,7 +174,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			
 			DrawGraph(0, 0, img[1], FALSE);
 			dx = dx + 10;
-			DrawGraph(CHARA_X+dx, CHARA_Y, CHARA[4], TRUE);
+			DrawGraph(CHARA_X+dx, CHARA_Y, CHARA1[WAL], TRUE);
 
 			if (CHARA_X + dx > 800) {
 			
