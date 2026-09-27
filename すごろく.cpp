@@ -1,8 +1,14 @@
 ﻿#include<iostream>
 #include<vector>
+#include<random>
 #include"DxLib.h"
 
 using namespace std;
+
+/*サイコロ設定*/
+random_device rd;
+mt19937 dice_num(rd());
+uniform_int_distribution diceroll(1, 6);
 
 /*ゲーム内カウント*/
 const int FRAME_RATE = 30;
@@ -53,6 +59,25 @@ struct Color {
 
 Color colors;
 
+class Character {
+
+private:
+
+	int x;
+	int y;
+	int hp;
+
+public:
+
+	void init(int x, int y, int hp);
+	int getx();
+	int gety();
+	int gethp();
+	void draw();
+	void dice();
+
+};
+
 /*関数設定*/
 void drawText(int x, int y, const char* txt, int val, int siz, int col) {
 
@@ -67,11 +92,17 @@ void drawText(int x, int y, const char* txt, int val, int siz, int col) {
 
 }
 
+int CHARA1[4];
+int CHARA2[4];
+int MASS[4];
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
 	SetWindowText("すごろく");
 	SetGraphMode(WIDTH, HEIGHT, 32);
 	ChangeWindowMode(TRUE);
+
+	Character chara[2];
 
 	int dx = 0;
 
@@ -170,13 +201,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			DrawBox(0, 0, WIDTH, HEIGHT, colors.BLACK, TRUE);
 			drawText(WIDTH / 2, HEIGHT / 2, "PLAY GAME", 0, 80, colors.WHITE);
+			
+				if (CheckHitKey(KEY_INPUT_M) == 1) {
 
-			if (CheckHitKey(KEY_INPUT_M) == 1) {
-			
-				scene = MOVE;
-				PlaySoundMem(WALK, DX_PLAYTYPE_BACK);
-			
-			}
+					scene = MOVE;
+					PlaySoundMem(WALK, DX_PLAYTYPE_BACK);
+
+				}
 
 			break;
 
@@ -210,5 +241,49 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	DxLib_End();
 	return 0;
+
+}
+
+void Character::init(int x, int y, int hp) {
+
+	this->x = x;
+	this->y = y;
+	this->hp = 100;
+
+}
+
+int Character::getx() {
+
+	return x;
+
+}
+
+int Character::gety() {
+
+	return y;
+
+}
+
+int Character::gethp() {
+
+	return hp;
+
+}
+
+void Character::dice() {
+
+	diceroll(dice_num);
+
+}
+
+void Character::draw() {
+
+	int px, py;
+
+	px = 0;
+	py = 0;
+
+	DrawGraph(px,py,CHARA1[0],TRUE);
+
 
 }
