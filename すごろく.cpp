@@ -20,6 +20,7 @@ const int CHARA_Y = 285;
 
 enum {TITLE,PLAY,DICE,MOVE,RESULT};
 enum { WAL, PRE, DIS, SUP };
+enum { green, blue, red, yellow };
 
 /*色設定*/
 struct Color {
@@ -109,6 +110,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		LoadGraph("CHARA2/CHARA2_PRE.png"),
 		LoadGraph("CHARA2/CHARA2_DIS.png"),
 		LoadGraph("CHARA2/CHARA2_SUP.png")
+
+	};
+
+	int MASS[4] = {
+
+		LoadGraph("MASS/GREEN.png"),
+		LoadGraph("MASS/BLUE.png"),
+		LoadGraph("MASS/RED.png"),
+		LoadGraph("MASS/YELLOW.png")
 
 	};
 
