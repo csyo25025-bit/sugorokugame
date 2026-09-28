@@ -28,6 +28,10 @@ enum {TITLE,PLAY,DICE,MOVE,RESULT};
 enum { WAL, PRE, DIS, SUP };
 enum { green, blue, red, yellow };
 
+int CHARA1[4];
+int CHARA2[4];
+int MASS[4];
+
 /*色設定*/
 struct Color {
 	
@@ -92,10 +96,6 @@ void drawText(int x, int y, const char* txt, int val, int siz, int col) {
 
 }
 
-int CHARA1[4];
-int CHARA2[4];
-int MASS[4];
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
 	SetWindowText("すごろく");
@@ -112,6 +112,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	
 	}
 
+	CHARA1[0] = LoadGraph("CHARA1/CHARA1_WAL.png");
+	CHARA1[1] = LoadGraph("CHARA1/CHARA1_PRE.png");
+	CHARA1[2] = LoadGraph("CHARA1/CHARA1_DIS.png");
+	CHARA1[3] = LoadGraph("CHARA1/CHARA1_SUP.png");
+
+	CHARA2[0] = LoadGraph("CHARA2/CHARA2_WAL.png");
+	CHARA2[1] = LoadGraph("CHARA2/CHARA2_PRE.png");
+	CHARA2[2] = LoadGraph("CHARA2/CHARA2_DIS.png");
+	CHARA2[3] = LoadGraph("CHARA2/CHARA2_SUP.png");
+
+	MASS[0] = LoadGraph("MASS/GREEN.png");
+	MASS[1] = LoadGraph("MASS/BLUE.png");
+	MASS[2] = LoadGraph("MASS/RED.png");
+	MASS[3] = LoadGraph("MASS/YELLOW.png");
+
 	int img[2] = {
 
 		LoadGraph("BACK/TITLE_BACK.jpg"),
@@ -125,33 +140,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int PRESED = LoadSoundMem("MUSIC/PRE.wav");
 	int DISAPOINTED = LoadSoundMem("MUSIC/DIS.wav");
 	int SUPREASED = LoadSoundMem("MUSIC/SUP.wav");
-
-	int CHARA1[4] = {
-
-		LoadGraph("CHARA1/CHARA1_WAL.png"),
-		LoadGraph("CHARA1/CHARA1_PRE.png"),
-		LoadGraph("CHARA1/CHARA1_DIS.png"),
-		LoadGraph("CHARA1/CHARA1_SUP.png"),
-
-	};
-
-	int CHARA2[4] = {
-
-		LoadGraph("CHARA2/CHARA2_WAL.png"),
-		LoadGraph("CHARA2/CHARA2_PRE.png"),
-		LoadGraph("CHARA2/CHARA2_DIS.png"),
-		LoadGraph("CHARA2/CHARA2_SUP.png")
-
-	};
-
-	int MASS[4] = {
-
-		LoadGraph("MASS/GREEN.png"),
-		LoadGraph("MASS/BLUE.png"),
-		LoadGraph("MASS/RED.png"),
-		LoadGraph("MASS/YELLOW.png")
-
-	};
 
 	ChangeVolumeSoundMem(128, BGM);
 	ChangeVolumeSoundMem(150, CLICK);
@@ -248,7 +236,7 @@ void Character::init(int x, int y, int hp) {
 
 	this->x = x;
 	this->y = y;
-	this->hp = 100;
+	this->hp = hp;
 
 }
 
@@ -283,7 +271,7 @@ void Character::draw() {
 	px = 0;
 	py = 0;
 
-	DrawGraph(px,py,CHARA1[0],TRUE);
+	DrawGraph(x,y,CHARA1[0],TRUE);
 
 
 }
