@@ -24,8 +24,8 @@ const int BSIZE = 80;
 const int CHARA_X = 0;
 const int CHARA_Y = 285;
 
-enum {TITLE,PLAY,DICE,MOVE,RESULT};
-enum { WAL, PRE, DIS, SUP };
+enum { TITLE, PLAY, DICE, MOVE, RESULT, PRE, DIS, SUP };
+enum { CHARAWAL, CHARAPRE, CHARADIS, CHARASUP };
 enum { green, blue, red, yellow };
 
 int CHARA1[4];
@@ -197,13 +197,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 				}
 
+				if (CheckHitKey(KEY_INPUT_P) == 1) {
+
+					scene = PRE;
+					PlaySoundMem(PRESED, DX_PLAYTYPE_BACK);
+
+				}
+
+				if (CheckHitKey(KEY_INPUT_D) == 1) {
+
+					scene = DIS;
+					PlaySoundMem(DISAPOINTED, DX_PLAYTYPE_BACK);
+
+				}
+
+				if (CheckHitKey(KEY_INPUT_S) == 1) {
+
+					scene = SUP;
+					PlaySoundMem(SUPREASED, DX_PLAYTYPE_BACK);
+
+				}
+
 			break;
 
 		case MOVE:
 			
 			DrawGraph(0, 0, img[1], FALSE);
 			dx = dx + 10;
-			DrawGraph(CHARA_X+dx, CHARA_Y, CHARA1[WAL], TRUE);
+			DrawGraph(CHARA_X+dx, CHARA_Y, CHARA1[CHARAWAL], TRUE);
 
 			if (CHARA_X + dx > 800) {
 			
@@ -214,6 +235,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			break;
 		
+		case PRE:
+
+			DrawGraph(0, 0, CHARA1[CHARAPRE], FALSE);
+
+			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+				scene = PLAY;
+			}
+
+			break;
+
+		case DIS:
+
+			DrawGraph(0, 0, CHARA1[CHARADIS], FALSE);
+
+			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+				scene = PLAY;
+			}
+
+			break;
+
+		case SUP:
+
+			DrawGraph(0, 0, CHARA1[CHARASUP], FALSE);
+
+			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+				scene = PLAY;
+			}
+
+			break;
+
+
 		}
 	
 		ScreenFlip();
