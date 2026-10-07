@@ -104,7 +104,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Character chara[2];
 
-	int dx = 0;
+	int dx = 1;
 
 	if (DxLib_Init() == -1) {
 	
@@ -127,10 +127,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MASS[2] = LoadGraph("MASS/RED.png");
 	MASS[3] = LoadGraph("MASS/YELLOW.png");
 
-	int img[2] = {
+	int img[6] = {
 
 		LoadGraph("BACK/TITLE_BACK.jpg"),
-		LoadGraph("BACK/MOVE_BACK.jpg")
+		LoadGraph("BACK/MOVE_BACK.jpg"),
+		LoadGraph("BACK/PLAY_BACK.jpg"),
+		LoadGraph("BACK/PRE_BACK.jpg"),
+		LoadGraph("BACK/DIS_BACK.jpg"),
+		LoadGraph("BACK/SUP_BACK.jpg")
 
 	};
 
@@ -178,7 +182,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (CheckHitKey(KEY_INPUT_SPACE)) {
 			
 				PlaySoundMem(CLICK, DX_PLAYTYPE_BACK);
-				dx = 0;
+				dx = 1;
 				scene = PLAY;
 			
 			}
@@ -187,11 +191,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		case PLAY:
 
-			DrawBox(0, 0, WIDTH, HEIGHT, colors.BLACK, TRUE);
+			DrawGraph(0, 0, img[2], FALSE);
 			drawText(WIDTH / 2, HEIGHT / 2, "PLAY GAME", 0, 80, colors.WHITE);
 			
 				if (CheckHitKey(KEY_INPUT_M) == 1) {
 
+					dx = 1;
 					scene = MOVE;
 					PlaySoundMem(WALK, DX_PLAYTYPE_BACK);
 
@@ -223,7 +228,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		case MOVE:
 			
 			DrawGraph(0, 0, img[1], FALSE);
+
 			dx = dx + 10;
+			
 			DrawGraph(CHARA_X+dx, CHARA_Y, CHARA1[CHARAWAL], TRUE);
 
 			if (CHARA_X + dx > 800) {
@@ -237,7 +244,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		
 		case PRE:
 
-			DrawGraph(0, 0, CHARA1[CHARAPRE], FALSE);
+			DrawGraph(0, 0, img[3], TRUE);
+
+			DrawGraph(0, 75, CHARA1[CHARAPRE], TRUE);
 
 			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 				scene = PLAY;
@@ -247,7 +256,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		case DIS:
 
-			DrawGraph(0, 0, CHARA1[CHARADIS], FALSE);
+			DrawGraph(0, 0, img[4], TRUE);
+
+			DrawGraph(0, 75, CHARA1[CHARADIS], TRUE);
 
 			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 				scene = PLAY;
@@ -257,7 +268,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		case SUP:
 
-			DrawGraph(0, 0, CHARA1[CHARASUP], FALSE);
+			DrawGraph(0, 0, img[5], TRUE);
+
+			DrawGraph(0, 75, CHARA1[CHARASUP], TRUE);
 
 			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 				scene = PLAY;
