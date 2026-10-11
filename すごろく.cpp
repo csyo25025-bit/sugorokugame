@@ -24,13 +24,16 @@ const int BSIZE = 80;
 const int CHARA_X = 0;
 const int CHARA_Y = 285;
 
-enum { TITLE, PLAY, DICE, MOVE, RESULT, PRE, DIS, SUP };
+enum { TITLE, PLAY, DICE, MOVE, RESULT, PRE, DIS, SUP,JANKEN };
 enum { CHARAWAL, CHARAPRE, CHARADIS, CHARASUP };
 enum { green, blue, red, yellow };
 
 int CHARA1[4];
 int CHARA2[4];
 int MASS[4];
+int JAN[3];
+
+int scene = TITLE;
 
 /*色設定*/
 struct Color {
@@ -96,6 +99,101 @@ void drawText(int x, int y, const char* txt, int val, int siz, int col) {
 
 }
 
+void janken() {
+	
+	static int state = 0;
+	static int p_hand = -1;
+	static int e_hand = -1;
+	static int result = -1;
+
+	if (state == 0) {
+
+		drawText(WIDTH / 2, HEIGHT * 0.2, "先攻後攻じゃんけん", 0, 50, colors.GOLD);
+		drawText(WIDTH / 2, HEIGHT * 0.35, "勝った方が先攻！キーを押してね", 0, 40, colors.GOLD);
+		drawText(WIDTH / 2, HEIGHT * 0.6, "1: グー   2: チョキ   3: パー", 0, 50, colors.WHITE);
+
+		if (CheckHitKey(KEY_INPUT_1) == 1) {
+
+			p_hand = 0;
+
+		}
+		else if (CheckHitKey(KEY_INPUT_2) == 1) {
+
+			p_hand = 1;
+		}
+		else if (CheckHitKey(KEY_INPUT_3) == 1) {
+
+			p_hand = 2;
+
+		}
+
+		if (p_hand != -1) {
+
+			e_hand = diceroll(dice_num) % 3;
+			result = (p_hand - e_hand + 3) % 3;
+			state = 1;
+			WaitTimer(200);
+
+		}
+
+	}
+
+	else if (state == 1) {
+
+		DrawRotaGraph(WIDTH / 4, HEIGHT * 0.7, 0.6, 0.0, JAN[p_hand], TRUE);
+		DrawRotaGraph(WIDTH * 3 / 4, HEIGHT * 0.7, 0.6, 0.0, JAN[e_hand], TRUE);
+
+		drawText(WIDTH / 4, HEIGHT / 2 - 30, "あなた", 0, 30, colors.LIGHTGREEN);
+		drawText(WIDTH * 3 / 4, HEIGHT / 2 - 30, "あいて", 0, 30, colors.RED);
+
+		if (result == 0) {
+
+			drawText(WIDTH / 2, HEIGHT - 130, "あいこ！", 0, 60, colors.WHITE);
+			drawText(WIDTH / 2, HEIGHT - 180, "スペースキーでもう1回", 0, 40, colors.GOLD);
+
+			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+
+				state = 0;
+				p_hand = -1;
+				WaitTimer(200);
+
+			}
+		}
+		else if (result == 2) {
+
+			drawText(WIDTH / 2, HEIGHT * 0.2, "あなたの勝ち！先攻です", 0, 60, colors.LIGHTGREEN);
+			drawText(WIDTH / 2, HEIGHT * 0.8, "スペースキーで戻る", 0, 40, colors.GOLD);
+
+			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+
+				state = 0;
+				p_hand = -1;
+				scene = PLAY;
+				WaitTimer(200);
+
+			}
+
+		}
+		else if (result == 1) {
+
+			drawText(WIDTH / 2, HEIGHT * 0.2, "あなたの負け！後攻です", 0, 60, colors.RED);
+			drawText(WIDTH / 2, HEIGHT * 0.8, "スペースキーで戻る", 0, 40, colors.GOLD);
+
+			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+
+				state = 0;
+				p_hand = -1;
+				scene = PLAY;
+				WaitTimer(200);
+
+			}
+
+		}
+
+	}
+
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
 	SetWindowText("すごろく");
@@ -127,14 +225,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MASS[2] = LoadGraph("MASS/RED.png");
 	MASS[3] = LoadGraph("MASS/YELLOW.png");
 
-	int img[6] = {
+	JAN[0] = LoadGraph("JANKEN/ROC.png");
+	JAN[1] = LoadGraph("JANKEN/SCI.png");
+	JAN[2] = LoadGraph("JANKEN/PEP.png");
+
+	int img[7] = {
 
 		LoadGraph("BACK/TITLE_BACK.jpg"),
 		LoadGraph("BACK/MOVE_BACK.jpg"),
 		LoadGraph("BACK/PLAY_BACK.jpg"),
 		LoadGraph("BACK/PRE_BACK.jpg"),
 		LoadGraph("BACK/DIS_BACK.jpg"),
-		LoadGraph("BACK/SUP_BACK.jpg")
+		LoadGraph("BACK/SUP_BACK.jpg"),
+		LoadGraph("BACK/JANKEN_BACK.jpeg")
 
 	};
 
@@ -156,7 +259,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetBackgroundColor(0, 0, 0);
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	int scene = TITLE;
 	int timer = 0;
 
 	while (ProcessMessage() == 0) {
@@ -223,6 +325,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 				}
 
+				if (CheckHitKey(KEY_INPUT_J) == 1) {
+				
+					scene = JANKEN;
+				
+				}
+
 			break;
 
 		case MOVE:
@@ -278,6 +386,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			break;
 
+		case JANKEN:
+
+			DrawGraph(0, 0, img[6], TRUE);
+			janken();
+			
+			break;
 
 		}
 	
