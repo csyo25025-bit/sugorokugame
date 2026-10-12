@@ -27,11 +27,13 @@ const int CHARA_Y = 285;
 enum { TITLE, PLAY, DICE, MOVE, RESULT, PRE, DIS, SUP,JANKEN };
 enum { CHARAWAL, CHARAPRE, CHARADIS, CHARASUP };
 enum { green, blue, red, yellow };
+enum {JAN,HEL,DEC,UP,DOW,};
 
 int CHARA1[4];
 int CHARA2[4];
 int MASS[4];
 int JAN[3];
+int NUM[6];
 
 int scene = TITLE;
 
@@ -120,6 +122,7 @@ void janken() {
 		else if (CheckHitKey(KEY_INPUT_2) == 1) {
 
 			p_hand = 1;
+		
 		}
 		else if (CheckHitKey(KEY_INPUT_3) == 1) {
 
@@ -228,6 +231,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	JAN[0] = LoadGraph("JANKEN/ROC.png");
 	JAN[1] = LoadGraph("JANKEN/SCI.png");
 	JAN[2] = LoadGraph("JANKEN/PEP.png");
+
+	NUM[0]= LoadGraph("NUMBER/ONE.png");
+	NUM[1]= LoadGraph("NUMBER/TOW.png");
+	NUM[2]= LoadGraph("NUMBER/THR.png");
+	NUM[3]= LoadGraph("NUMBER/FOU.png");
+	NUM[4]= LoadGraph("NUMBER/FIV.png");
+	NUM[5]= LoadGraph("NUMBER/SIX.png");
 
 	int img[7] = {
 
@@ -440,6 +450,12 @@ int Character::gethp() {
 void Character::dice() {
 
 	diceroll(dice_num);
+
+	if (diceroll() == 1) {
+	
+
+	
+	}
 
 }
 
