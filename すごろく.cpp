@@ -343,6 +343,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			
 				scene = JANKEN;
 			}
+
+			if (CheckHitKey(KEY_INPUT_X) == 1) {
+			
+				scene = DICE;
+			
+			}
 			
 			break;
 
@@ -356,6 +362,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (!is_moving) {
 				
 				StopSoundMem(WALK);
+				chara[0].init(CHARA_X, CHARA_Y, 100, CHARA1);
 				scene = PLAY;
 			
 			}
@@ -409,6 +416,58 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			janken();
 			
 			break;
+
+		case DICE:
+
+			static int dice_state = 0;
+			static int current_dice = 1;
+
+			if (dice_state == 0) {
+				
+				current_dice = diceroll(dice_num);
+				DrawRotaGraph(WIDTH / 2, HEIGHT / 2, 0.5, 0.0, NUM[current_dice - 1], TRUE);
+
+				if (timer % 30 < 15) {
+					
+					drawText(WIDTH / 2, HEIGHT * 0.75, "「SPACE」キーでサイコロを止める！", 0, 40, colors.GOLD);
+				
+				}
+
+				if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+				
+					dice_state = 1;
+					PlaySoundMem(CLICK, DX_PLAYTYPE_BACK);
+					WaitTimer(200); 
+				
+				}
+			
+			}
+			else if (dice_state == 1) {
+				
+				DrawRotaGraph(WIDTH / 2, HEIGHT / 2, 0.5, 0.0, NUM[current_dice - 1], TRUE);
+				drawText(WIDTH / 2, HEIGHT * 0.2, "出目が決定！", 0, 50, colors.LIGHTGREEN);
+
+				if (timer % 30 < 15) {
+				
+					drawText(WIDTH / 2, HEIGHT * 0.75, "「SPACE」キーで移動開始！", 0, 40, colors.GOLD);
+				
+				}
+
+				if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+					
+					chara[0].startMove(800);
+
+					scene = MOVE;
+					dice_state = 0;
+					PlaySoundMem(WALK, DX_PLAYTYPE_BACK);
+					WaitTimer(200);
+				
+				}
+			
+			}
+			
+			break;
+
 		
 		}
 
@@ -453,22 +512,31 @@ void Character::startMove(int move_distance) {
 }
 
 bool Character::update() {
-
 	if (x < target_x) {
-
-		x += speed;
 		
+		x += speed;
+
+		if (x >= WIDTH - BSIZE) {
+		
+			x = WIDTH - BSIZE;
+			target_x = x; 
+			
+			return false; 
+		
+		}
+
 		if (x >= target_x) {
 		
 			x = target_x;
-			return false;
+			
+			return false; 
 		
 		}
-		
-		return true;
+
+		return true; 
 	
 	}
-	
+
 	return false;
 
 }
@@ -505,6 +573,14 @@ int Character::gethp() {
 
 int Character::dice() {
 
-	return diceroll(dice_num);
+	int Dice = diceroll(dice_num);
+
+	if (Dice >= 1 && Dice <= 6) {
+		
+		DrawRotaGraph(WIDTH / 2, HEIGHT / 2, 1.0, 0.0, NUM[Dice - 1], TRUE);
+	
+}
+
+	return Dice;
 
 }
