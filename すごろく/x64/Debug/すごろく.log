@@ -11,7 +11,7 @@ C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(189,31): wa
 C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(190,31): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
 C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(291,31): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
 C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(295,32): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(432,33): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(448,32): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
-C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(452,33): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(424,33): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(440,32): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
+C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\すごろく.cpp(444,33): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
   すごろく.vcxproj -> C:\Users\Pikus\OneDrive\デスクトップ\sugoroku\x64\Debug\すごろく.exe

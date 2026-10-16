@@ -310,14 +310,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DrawGraph(0, 0, img[2], FALSE);
 			drawText(WIDTH / 2, HEIGHT / 2, "PLAY GAME", 0, 80, colors.WHITE);
 
-			if (CheckHitKey(KEY_INPUT_M) == 1) {
-			
-				chara[0].startMove(800);
-				scene = MOVE;
-				PlaySoundMem(WALK, DX_PLAYTYPE_BACK);
-			
-			}
-
 			if (CheckHitKey(KEY_INPUT_P) == 1) {
 			
 				scene = PRE;
