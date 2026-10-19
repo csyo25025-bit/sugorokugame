@@ -22,7 +22,7 @@ const int BSIZE = 80;
 const int CHARA_X = 0;
 const int CHARA_Y = 285;
 
-enum { TITLE, PLAY, DICE, MOVE, RESULT, PRE, DIS, SUP, JANKEN };
+enum { TITLE, PLAY, DICE, MOVE, RESULT, PRE, DIS, SUP, JANKEN, SURROT };
 enum { CHARAWAL, CHARAPRE, CHARADIS, CHARASUP };
 enum { green, blue, red, yellow };
 enum { JAN_ENUM, HEL, DEC, UP, DOW };
@@ -310,6 +310,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DrawGraph(0, 0, img[2], FALSE);
 			drawText(WIDTH / 2, HEIGHT / 2, "PLAY GAME", 0, 80, colors.WHITE);
 
+			if (CheckHitKey(KEY_INPUT_O) == 1) {
+			
+				scene=SURROT;
+			
+			}
+			
 			if (CheckHitKey(KEY_INPUT_P) == 1) {
 			
 				scene = PRE;
@@ -459,6 +465,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 			
 			break;
+
+		case SURROT:
+
 
 		
 		}
