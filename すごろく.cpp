@@ -1,24 +1,26 @@
-﻿#include<iostream>
-#include<vector>
-#include<random>
-#include"DxLib.h"
+﻿#include <iostream>
+#include <vector>
+#include <random>
+#include <cstring> // strlen用
+#include "DxLib.h"
+
 using namespace std;
 
-/*サイコロ設定*/
+/* サイコロ設定 */
 random_device rd;
 mt19937 dice_num(rd());
 uniform_int_distribution diceroll(1, 6);
 
-/*ゲーム内カウント*/
+/* ゲーム内カウント */
 const int FRAME_RATE = 30;
 const int FRAME_TIME = 1000 / FRAME_RATE;
 
-/*画面設定*/
+/* 画面設定 */
 const int WIDTH = 960;
 const int HEIGHT = 640;
 const int BSIZE = 80;
 
-/*キャラクターサイズ*/
+/* キャラクターサイズ */
 const int CHARA_X = 0;
 const int CHARA_Y = 285;
 
@@ -34,19 +36,11 @@ int JAN[3];
 int NUM[6];
 int scene = TITLE;
 
-/*色設定*/
+/* 色設定 */
 struct Color {
 	
-	int RED;
-	int GREEN;
-	int BLUE;
-	int WHITE;
-	int BLACK;
-	int MAGENTA;
-	int EMERALDGREEN;
-	int GOLD;
-	int LIGHTGREEN;
-
+	int RED, GREEN, BLUE, WHITE, BLACK, MAGENTA, EMERALDGREEN, GOLD, LIGHTGREEN;
+	
 	void Init() {
 	
 		RED = GetColor(255, 0, 0);
@@ -78,7 +72,7 @@ private:
 	int images[4];
 
 public:
-
+	
 	void init(int start_x, int start_y, int initial_hp, const int img_array[4]);
 	void startMove(int move_distance);
 	bool update();
@@ -87,15 +81,15 @@ public:
 	int gety();
 	int gethp();
 	void draw();
-	int dice();
+	vector<int> rollDice(int num_dice);
 
 };
 
-/*関数設定*/
 void drawText(int x, int y, const char* txt, int val, int siz, int col) {
-	
+
 	SetFontSize(BSIZE * siz / 100);
-	int strWidth = GetDrawStringWidth(txt, strlen(txt));
+
+	int strWidth = GetDrawStringWidth(txt, (int)strlen(txt));
 
 	x = x - strWidth / 2;
 	y = y - BSIZE * siz / 100 / 2;
@@ -106,32 +100,32 @@ void drawText(int x, int y, const char* txt, int val, int siz, int col) {
 }
 
 void janken() {
-	
+
 	static int state = 0;
 	static int p_hand = -1;
 	static int e_hand = -1;
 	static int result = -1;
 
 	if (state == 0) {
-		
+
 		drawText(WIDTH / 2, HEIGHT * 0.2, "先攻後攻じゃんけん", 0, 50, colors.GOLD);
 		drawText(WIDTH / 2, HEIGHT * 0.35, "勝った方が先攻！キーを押してね", 0, 40, colors.GOLD);
 		drawText(WIDTH / 2, HEIGHT * 0.6, "1: グー   2: チョキ   3: パー", 0, 50, colors.WHITE);
 
 		if (CheckHitKey(KEY_INPUT_1) == 1) {
-		
+
 			p_hand = 0;
 		
 		}
 		
 		else if (CheckHitKey(KEY_INPUT_2) == 1) {
-		
+
 			p_hand = 1;
-		
+
 		}
-		
+
 		else if (CheckHitKey(KEY_INPUT_3) == 1) {
-		
+
 			p_hand = 2;
 		
 		}
@@ -146,7 +140,6 @@ void janken() {
 		}
 	
 	}
-	
 	else if (state == 1) {
 	
 		DrawRotaGraph(WIDTH / 4, HEIGHT * 0.7, 0.6, 0.0, JAN[p_hand], TRUE);
@@ -184,6 +177,7 @@ void janken() {
 			}
 		
 		}
+		
 		else if (result == 1) {
 		
 			drawText(WIDTH / 2, HEIGHT * 0.2, "あなたの負け！後攻です", 0, 60, colors.RED);
@@ -243,7 +237,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	NUM[5] = LoadGraph("NUMBER/SIX.png");
 
 	int img[7] = {
-	
+		
 		LoadGraph("BACK/TITLE_BACK.jpg"),
 		LoadGraph("BACK/MOVE_BACK.jpg"),
 		LoadGraph("BACK/PLAY_BACK.jpg"),
@@ -255,7 +249,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	};
 
 	Character chara[2];
-
+	
 	chara[0].init(CHARA_X, CHARA_Y, 100, CHARA1);
 	chara[1].init(CHARA_X, CHARA_Y + 100, 100, CHARA2);
 
@@ -278,15 +272,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	int timer = 0;
 
+	// サイコロ状態共有用変数
+	int dice_state = 0;
+	vector<int> current_dices;
+
 	while (ProcessMessage() == 0) {
 		
 		++timer;
 		ClearDrawScreen();
 
 		switch (scene) {
-		
+
 		case TITLE:
-		
+			
 			DrawGraph(0, 0, img[0], FALSE);
 			drawText(WIDTH / 2, HEIGHT * 0.33, "すごろく", 0, 100, colors.LIGHTGREEN);
 
@@ -310,55 +308,56 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DrawGraph(0, 0, img[2], FALSE);
 			drawText(WIDTH / 2, HEIGHT / 2, "PLAY GAME", 0, 80, colors.WHITE);
 
-			if (CheckHitKey(KEY_INPUT_O) == 1) {
-			
-				scene=SURROT;
+			if (CheckHitKey(KEY_INPUT_O) == 1) { 
+				
+				scene = SURROT;
 			
 			}
 			
-			if (CheckHitKey(KEY_INPUT_P) == 1) {
-			
-				scene = PRE;
+			if (CheckHitKey(KEY_INPUT_P) == 1) { 
+				
+				scene = PRE; 
 				PlaySoundMem(PRESED, DX_PLAYTYPE_BACK);
 			
 			}
-
-			if (CheckHitKey(KEY_INPUT_D) == 1) {
 			
+			if (CheckHitKey(KEY_INPUT_D) == 1) { 
+				
 				scene = DIS;
-				PlaySoundMem(DISAPOINTED, DX_PLAYTYPE_BACK);
+				PlaySoundMem(DISAPOINTED, DX_PLAYTYPE_BACK); 
 			
 			}
-
-			if (CheckHitKey(KEY_INPUT_S) == 1) {
 			
+			if (CheckHitKey(KEY_INPUT_S) == 1) { 
+				
 				scene = SUP;
-				PlaySoundMem(SUPREASED, DX_PLAYTYPE_BACK);
+				PlaySoundMem(SUPREASED, DX_PLAYTYPE_BACK); 
 			
 			}
-
+			
 			if (CheckHitKey(KEY_INPUT_J) == 1) {
-			
-				scene = JANKEN;
-			}
 
-			if (CheckHitKey(KEY_INPUT_X) == 1) {
+				scene = JANKEN;
 			
+			}
+			
+			if (CheckHitKey(KEY_INPUT_X) == 1) {
+				
+				dice_state = 0; 
 				scene = DICE;
 			
 			}
 			
 			break;
 
-		case MOVE:{
-
+		case MOVE: {
+			
 			DrawGraph(0, 0, img[1], FALSE);
-
 			bool is_moving = chara[0].update();
 			chara[0].draw();
 
 			if (!is_moving) {
-				
+			
 				StopSoundMem(WALK);
 				chara[0].init(CHARA_X, CHARA_Y, 100, CHARA1);
 				scene = PLAY;
@@ -367,15 +366,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		
 		}
 		
-		break;
+			break;
 
 		case PRE:
 		
 			DrawGraph(0, 0, img[3], TRUE);
 			DrawGraph(0, 75, CHARA1[CHARAPRE], TRUE);
-		
 			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
-			
+
 				scene = PLAY;
 			
 			}
@@ -387,8 +385,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DrawGraph(0, 0, img[4], TRUE);
 			DrawGraph(0, 75, CHARA1[CHARADIS], TRUE);
 			
-			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 			
+			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+
 				scene = PLAY;
 			
 			}
@@ -401,7 +400,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DrawGraph(0, 75, CHARA1[CHARASUP], TRUE);
 			
 			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
-			
+
 				scene = PLAY;
 			
 			}
@@ -409,24 +408,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			break;
 
 		case JANKEN:
-			
+
 			DrawGraph(0, 0, img[6], TRUE);
 			janken();
 			
 			break;
 
 		case DICE:
-
-			static int dice_state = 0;
-			static int current_dice = 1;
-
+			
 			if (dice_state == 0) {
-				
-				current_dice = diceroll(dice_num);
-				DrawRotaGraph(WIDTH / 2, HEIGHT / 2, 0.5, 0.0, NUM[current_dice - 1], TRUE);
+			
+				current_dices = chara[0].rollDice(1);
 
 				if (timer % 30 < 15) {
-					
+				
 					drawText(WIDTH / 2, HEIGHT * 0.75, "「SPACE」キーでサイコロを止める！", 0, 40, colors.GOLD);
 				
 				}
@@ -435,14 +430,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				
 					dice_state = 1;
 					PlaySoundMem(CLICK, DX_PLAYTYPE_BACK);
-					WaitTimer(200); 
+					WaitTimer(200);
 				
 				}
 			
 			}
+			
 			else if (dice_state == 1) {
-				
-				DrawRotaGraph(WIDTH / 2, HEIGHT / 2, 0.5, 0.0, NUM[current_dice - 1], TRUE);
+			
+				DrawRotaGraph(WIDTH / 2, HEIGHT / 2, 0.5, 0.0, NUM[current_dices[0] - 1], TRUE);
 				drawText(WIDTH / 2, HEIGHT * 0.2, "出目が決定！", 0, 50, colors.LIGHTGREEN);
 
 				if (timer % 30 < 15) {
@@ -452,9 +448,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 
 				if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
-					
-					chara[0].startMove(800);
-
+				
+					chara[0].startMove(current_dices[0] * 80);
 					scene = MOVE;
 					dice_state = 0;
 					PlaySoundMem(WALK, DX_PLAYTYPE_BACK);
@@ -467,21 +462,68 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			break;
 
 		case SURROT:
+			
+			if (dice_state == 0) {
 
+				current_dices = chara[0].rollDice(3);
 
-		
+				if (timer % 30 < 15) {
+			
+					drawText(WIDTH / 2, HEIGHT * 0.75, "「SPACE」キーでスロットを止める！", 0, 40, colors.GOLD);
+				
+				}
+
+				if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+				
+					dice_state = 1;
+					PlaySoundMem(CLICK, DX_PLAYTYPE_BACK);
+					WaitTimer(200);
+				
+				}
+			
+			}
+			
+			else if (dice_state == 1) {
+			
+				for (int i = 0; i < 3; i++) {
+				
+					int draw_x = WIDTH / 4 + (i * (WIDTH / 4));
+					DrawRotaGraph(draw_x, HEIGHT / 2, 0.5, 0.0, NUM[current_dices[i] - 1], TRUE);
+			
+				}
+
+				drawText(WIDTH / 2, HEIGHT * 0.2, "スロット結果確定！", 0, 50, colors.LIGHTGREEN);
+				
+				if (timer % 30 < 15) {
+				
+					drawText(WIDTH / 2, HEIGHT * 0.75, "「SPACE」キーでPLAYへ戻る", 0, 40, colors.GOLD);
+				
+				}
+
+				if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+				
+					scene = PLAY;
+					dice_state = 0;
+					WaitTimer(200);
+				
+				}
+			
+			}
+			
+			break;
+
 		}
 
 		ScreenFlip();
 		WaitTimer(FRAME_TIME);
 
 		if (CheckHitKey(KEY_INPUT_ESCAPE) == 1) {
-			
+
 			break;
 		
 		}
 	
-	}
+}
 
 	DxLib_End();
 	return 0;
@@ -489,7 +531,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 }
 
 void Character::init(int start_x, int start_y, int initial_hp, const int img_array[4]) {
-	
+
 	x = start_x;
 	y = start_y;
 	target_x = start_x;
@@ -498,7 +540,7 @@ void Character::init(int start_x, int start_y, int initial_hp, const int img_arr
 	state = CHARAWAL;
 
 	for (int i = 0; i < 4; i++) {
-	
+
 		images[i] = img_array[i];
 	
 	}
@@ -513,75 +555,77 @@ void Character::startMove(int move_distance) {
 }
 
 bool Character::update() {
-	if (x < target_x) {
-		
-		x += speed;
 
+	if (x < target_x) {
+
+		x += speed;
 		if (x >= WIDTH - BSIZE) {
-		
+
 			x = WIDTH - BSIZE;
-			target_x = x; 
-			
-			return false; 
-		
+			target_x = x;
+			return false;
+
 		}
 
 		if (x >= target_x) {
-		
+
 			x = target_x;
-			
-			return false; 
-		
+			return false;
+
 		}
 
-		return true; 
-	
+		return true;
+
 	}
 
 	return false;
 
 }
 
-void Character::setState(int new_state) {
-
-	state = new_state;
+void Character::setState(int new_state) { 
+	
+	state = new_state; 
 
 }
 
 void Character::draw() {
-
+	
 	DrawGraph(x, y, images[state], TRUE);
 
 }
 
-int Character::getx() {
+int Character::getx() { 
 	
 	return x;
 
 }
 
-int Character::gety() {
-
-	return y;
+int Character::gety() { 
+	
+	return y; 
 
 }
 
 int Character::gethp() {
-
-	return hp;
-
-}
-
-int Character::dice() {
-
-	int Dice = diceroll(dice_num);
-
-	if (Dice >= 1 && Dice <= 6) {
-		
-		DrawRotaGraph(WIDTH / 2, HEIGHT / 2, 1.0, 0.0, NUM[Dice - 1], TRUE);
 	
+	return hp; 
+
 }
 
-	return Dice;
+vector<int> Character::rollDice(int num_dice) {
+
+	vector<int> results;
+
+	for (int i = 0; i < num_dice; i++) {
+
+		int roll = diceroll(dice_num);
+		results.push_back(roll);
+
+		int draw_x = WIDTH / (num_dice + 1) * (i + 1);
+		DrawRotaGraph(draw_x, HEIGHT / 2, 0.5, 0.0, NUM[roll - 1], TRUE);
+
+	}
+
+	return results;
 
 }
