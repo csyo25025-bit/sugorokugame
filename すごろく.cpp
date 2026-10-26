@@ -18,14 +18,26 @@ const int FRAME_TIME = 1000 / FRAME_RATE;
 const int WIDTH = 960;
 const int HEIGHT = 640;
 
+const float TEXTX = WIDTH / 2;
+
 const int BASE_FONT_SIZE = 80;
 const int MASS_SIZE = 60;
 
-const int TOTAL_MASS = 30; // マス数（変更可能）
+const int MASSTYPE = 4;
+const int TOTAL_MASS = 10; // マス数（変更可能）
 const int COLS_PER_ROW = WIDTH / MASS_SIZE; // 16マス
 
 const int CHARA_X = 0;
 const int CHARA_Y = 285;
+const int CHAHP = 10;
+const int GHP = 30;
+
+
+/*マス確率*/
+const int MASSRATE = 30;
+const int MASSG = 10;
+const int MASSB = MASSG + MASSRATE;
+const int MASSR = MASSB + MASSRATE;
 
 enum { TITLE, FIRST_JANKEN, PLAY, DICE, MOVE, RESULT, PRE, DIS, SUP, JANKEN, SURROT };
 enum { CHARAWAL, CHARAPRE, CHARADIS, CHARASUP };
@@ -146,19 +158,19 @@ vector<int> createMap(int num_mass, int start_type = MASS_START, int goal_type =
 
 		int prob = mass_prob(dice_num);
 
-		if (prob <= 60) {
+		if (prob <= MASSG) {
 
 			game_map.push_back(MASS_GREEN);
 
 		}
-　
-		else if (prob <= 80) {
+
+		else if (prob <= MASSB) {
 
 			game_map.push_back(MASS_BLUE);
 
 		}
 
-		else if (prob <= 90) {
+		else if (prob <= MASSR) {
 
 			game_map.push_back(MASS_RED);
 
@@ -171,6 +183,7 @@ vector<int> createMap(int num_mass, int start_type = MASS_START, int goal_type =
 		}
 
 	}
+
 
 	if (num_mass > 0) {
 
@@ -204,7 +217,7 @@ void drawMap(const vector<int>& game_map, int p1_mass, int p2_mass) {
 
 		int type = game_map[i];
 
-		if (type >= 0 && type < 4) {
+		if (type >= 0 && type < MASSTYPE) {
 		
 			DrawExtendGraph(draw_x, draw_y, draw_x + MASS_SIZE, draw_y + MASS_SIZE, MASS[type], TRUE);
 		
@@ -261,9 +274,9 @@ void firstJanken(int& current_turn) {
 
 	if (state == 0) {
 
-		drawText(WIDTH / 2, HEIGHT * 0.2, "先攻後攻決定じゃんけん", 0, 50, colors.GOLD);
-		drawText(WIDTH / 2, HEIGHT * 0.35, "勝った方が先攻！キーを押してね", 0, 40, colors.GOLD);
-		drawText(WIDTH / 2, HEIGHT * 0.6, "1: グー   2: チョキ   3: パー", 0, 50, colors.WHITE);
+		drawText(TEXTX, HEIGHT * 0.2, "先攻後攻決定じゃんけん", 0, 50, colors.GOLD);
+		drawText(TEXTX, HEIGHT * 0.35, "勝った方が先攻！キーを押してね", 0, 40, colors.GOLD);
+		drawText(TEXTX, HEIGHT * 0.6, "1: グー   2: チョキ   3: パー", 0, 50, colors.WHITE);
 
 		if (CheckHitKey(KEY_INPUT_1) == 1) {
 
@@ -305,8 +318,8 @@ void firstJanken(int& current_turn) {
 
 		if (result == 0) {
 		
-			drawText(WIDTH / 2, HEIGHT - 130, "あいこ！", 0, 60, colors.WHITE);
-			drawText(WIDTH / 2, HEIGHT - 180, "スペースキーでもう1回", 0, 40, colors.GOLD);
+			drawText(TEXTX, HEIGHT - 130, "あいこ！", 0, 60, colors.WHITE);
+			drawText(TEXTX, HEIGHT - 180, "スペースキーでもう1回", 0, 40, colors.GOLD);
 			
 			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 			
@@ -320,8 +333,8 @@ void firstJanken(int& current_turn) {
 		
 		else if (result == 2) { // 勝ち
 		
-			drawText(WIDTH / 2, HEIGHT * 0.2, "あなたの勝ち！先攻（あなた）です", 0, 50, colors.LIGHTGREEN);
-			drawText(WIDTH / 2, HEIGHT * 0.8, "スペースキーでゲーム開始", 0, 40, colors.GOLD);
+			drawText(TEXTX, HEIGHT * 0.2, "あなたの勝ち！先攻（あなた）です", 0, 50, colors.LIGHTGREEN);
+			drawText(TEXTX, HEIGHT * 0.8, "スペースキーでゲーム開始", 0, 40, colors.GOLD);
 			
 			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 			
@@ -337,8 +350,8 @@ void firstJanken(int& current_turn) {
 		
 		else if (result == 1) { // 負け
 		
-			drawText(WIDTH / 2, HEIGHT * 0.2, "あなたの負け！先攻（あいて）です", 0, 50, colors.RED);
-			drawText(WIDTH / 2, HEIGHT * 0.8, "スペースキーでゲーム開始", 0, 40, colors.GOLD);
+			drawText(TEXTX, HEIGHT * 0.2, "あなたの負け！先攻（あいて）です", 0, 50, colors.RED);
+			drawText(TEXTX, HEIGHT * 0.8, "スペースキーでゲーム開始", 0, 40, colors.GOLD);
 			
 			if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 			
@@ -371,9 +384,12 @@ void janken(Character& current_chara, int current_turn, int& next_turn, int& ene
 
 		if (current_turn == 0) {
 
-			drawText(WIDTH / 2, HEIGHT * 0.2, "イベントじゃんけん！", 0, 50, colors.GOLD);
-			drawText(WIDTH / 2, HEIGHT * 0.35, "勝ったらHP20回復！キーを押してね", 0, 40, colors.GOLD);
-			drawText(WIDTH / 2, HEIGHT * 0.6, "1: グー   2: チョキ   3: パー", 0, 50, colors.WHITE);
+			drawText(TEXTX, HEIGHT * 0.2, "イベントじゃんけん！", 0, 50, colors.GOLD);
+
+			char hp_res[64];
+			sprintf_s(hp_res, "勝ったらHP%d回復！キーを押してね", CHAHP);
+			drawText(TEXTX, HEIGHT * 0.8, hp_res, 0, 40, colors.LIGHTGREEN);
+			drawText(TEXTX, HEIGHT * 0.6, "1: グー   2: チョキ   3: パー", 0, 50, colors.WHITE);
 
 			if (CheckHitKey(KEY_INPUT_1) == 1) {
 
@@ -429,11 +445,11 @@ void janken(Character& current_chara, int current_turn, int& next_turn, int& ene
 
 		if (result == 0) {
 		
-			drawText(WIDTH / 2, HEIGHT - 130, "あいこ！", 0, 60, colors.WHITE);
+			drawText(TEXTX, HEIGHT - 130, "あいこ！", 0, 60, colors.WHITE);
 			
 			if (current_turn == 0) {
 			
-				drawText(WIDTH / 2, HEIGHT - 180, "スペースキーでもう1回", 0, 40, colors.GOLD);
+				drawText(TEXTX, HEIGHT - 180, "スペースキーでもう1回", 0, 40, colors.GOLD);
 				
 				if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 				
@@ -465,16 +481,18 @@ void janken(Character& current_chara, int current_turn, int& next_turn, int& ene
 		
 			if (!hp_recovered) {
 			
-				current_chara.addHp(20);
+				current_chara.addHp(CHAHP);
 				hp_recovered = true;
 			
 			}
 			
-			drawText(WIDTH / 2, HEIGHT * 0.2, "勝利！ (HP+20回復)", 0, 50, colors.LIGHTGREEN);
+			char hp_res[64];
+			sprintf_s(hp_res, "勝利！ (HP%d回復)", CHAHP);
+			drawText(TEXTX, HEIGHT * 0.8, hp_res, 0, 40, colors.LIGHTGREEN);
 
 			if (current_turn == 0) {
 			
-				drawText(WIDTH / 2, HEIGHT * 0.8, "スペースキーで戻る", 0, 40, colors.GOLD);
+				drawText(TEXTX, HEIGHT * 0.8, "スペースキーで戻る", 0, 40, colors.GOLD);
 				
 				if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 				
@@ -508,11 +526,11 @@ void janken(Character& current_chara, int current_turn, int& next_turn, int& ene
 		
 		else if (result == 1) {
 		
-			drawText(WIDTH / 2, HEIGHT * 0.2, "敗北... (回復なし)", 0, 50, colors.RED);
+			drawText(TEXTX, HEIGHT * 0.2, "敗北... (回復なし)", 0, 50, colors.RED);
 
 			if (current_turn == 0) {
 			
-				drawText(WIDTH / 2, HEIGHT * 0.8, "スペースキーで戻る", 0, 40, colors.GOLD);
+				drawText(TEXTX, HEIGHT * 0.8, "スペースキーで戻る", 0, 40, colors.GOLD);
 				
 				if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
 				
@@ -639,11 +657,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		case TITLE:
 		
 			DrawGraph(0, 0, img[0], FALSE);
-			drawText(WIDTH / 2, HEIGHT * 0.33, "すごろく", 0, 100, colors.LIGHTGREEN);
+			drawText(TEXTX, HEIGHT * 0.33, "すごろく", 0, 100, colors.LIGHTGREEN);
 
 			if (timer % 30 < 15) {
 			
-				drawText(WIDTH / 2, HEIGHT * 0.66, "「SPACE」キーを押してゲームスタート", 0, 50, colors.GOLD);
+				drawText(TEXTX, HEIGHT * 0.66, "「SPACE」キーを押してゲームスタート", 0, 50, colors.GOLD);
 			
 			}
 
@@ -693,7 +711,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			char pos_info[64];
 			sprintf_s(pos_info, "あなた: 残り%dマス  |  あいて: 残り%dマス", p1_rem, p2_rem);
-			drawText(WIDTH / 2, HEIGHT * 0.08, pos_info, 0, 36, colors.GOLD);
+			drawText(TEXTX, HEIGHT * 0.08, pos_info, 0, 36, colors.GOLD);
 
 			int p1_color = chara[0].isLowHp() ? colors.RED : colors.LIGHTGREEN;
 			int p2_color = chara[1].isLowHp() ? colors.RED : colors.LIGHTGREEN;
@@ -709,13 +727,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				
 				if (chara[0].isLowHp()) {
 				
-					drawText(WIDTH / 2, HEIGHT * 0.23, "【あなたのターン】ピンチ！(出目半減中) 「X」で振る", 0, 32, colors.RED);
+					drawText(TEXTX, HEIGHT * 0.23, "【あなたのターン】ピンチ！(出目半減中) 「X」で振る", 0, 32, colors.RED);
 				
 				}
 				
 				else {
 				
-					drawText(WIDTH / 2, HEIGHT * 0.23, "【あなたのターン】「X」キーでサイコロ！", 0, 35, colors.WHITE);
+					drawText(TEXTX, HEIGHT * 0.23, "【あなたのターン】「X」キーでサイコロ！", 0, 35, colors.WHITE);
 				
 				}
 
@@ -733,13 +751,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			
 				if (chara[1].isLowHp()) {
 				
-					drawText(WIDTH / 2, HEIGHT * 0.23, "【あいてのターン】ピンチ！(出目半減中) 自動進行中...", 0, 32, colors.RED);
+					drawText(TEXTX, HEIGHT * 0.23, "【あいてのターン】ピンチ！(出目半減中) 自動進行中...", 0, 32, colors.RED);
 				
 				}
 				
 				else {
 				
-					drawText(WIDTH / 2, HEIGHT * 0.23, "【あいてのターン】自動進行中...", 0, 35, colors.RED);
+					drawText(TEXTX, HEIGHT * 0.23, "【あいてのターン】自動進行中...", 0, 35, colors.RED);
 				
 				}
 
@@ -811,7 +829,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 				if (landed_mass >= TOTAL_MASS - 1) {
 					
-					chara[current_turn].addHp(30);
+					chara[current_turn].addHp(GHP);
 					goal_winner = current_turn;
 					scene = RESULT;
 				
@@ -823,7 +841,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 				if (mass_type == MASS_BLUE) {
 				
-					chara[current_turn].addHp(10);
+					chara[current_turn].addHp(CHAHP);
 					PlaySoundMem(PRESED, DX_PLAYTYPE_BACK);
 					
 					scene = PRE;
@@ -832,7 +850,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				
 				else if (mass_type == MASS_RED) {
 				
-					chara[current_turn].addHp(-10);
+					chara[current_turn].addHp(-CHAHP);
 					PlaySoundMem(DISAPOINTED, DX_PLAYTYPE_BACK);
 					
 					scene = DIS;
@@ -864,7 +882,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			
 			DrawGraph(0, 0, img[3], TRUE);
 			DrawGraph(0, 75, chara[current_turn].getImage(CHARAPRE), TRUE);
-			drawText(WIDTH / 2, HEIGHT * 0.85, "青マス！HP+10回復！ (SPACEで戻る)", 0, 36, colors.GOLD);
+
+			char hp_res[64];
+			sprintf_s(hp_res, "青マス！HP%d回復！ (SPACEで戻る)", CHAHP);
+			drawText(TEXTX, HEIGHT * 0.8, hp_res, 0, 40, colors.LIGHTGREEN);
 
 			if (current_turn == 0) {
 			
@@ -899,7 +920,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			
 			DrawGraph(0, 0, img[4], TRUE);
 			DrawGraph(0, 75, chara[current_turn].getImage(CHARADIS), TRUE);
-			drawText(WIDTH / 2, HEIGHT * 0.85, "赤マス！HP-10！ (SPACEで戻る)", 0, 36, colors.RED);
+
+			sprintf_s(hp_res, "赤マス！HP-%d！ (SPACEで戻る)", CHAHP);
+			drawText(TEXTX, HEIGHT * 0.8, hp_res, 0, 40, colors.LIGHTGREEN);
 
 			if (current_turn == 0) {
 			
@@ -935,7 +958,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			
 			DrawGraph(0, 0, img[5], TRUE);
 			DrawGraph(0, 75, chara[current_turn].getImage(CHARASUP), TRUE);
-			drawText(WIDTH / 2, HEIGHT * 0.85, "黄色マス！イベント画面へ (SPACEで進む)", 0, 36, colors.GOLD);
+			drawText(TEXTX, HEIGHT * 0.85, "黄色マス！イベント画面へ (SPACEで進む)", 0, 36, colors.GOLD);
 
 			if (current_turn == 0) {
 			
@@ -943,18 +966,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				
 					int ev = yellow_event(dice_num);
 					slot_hp_applied = false;
-					
+
 					if (ev == 0) {
 
 						scene = JANKEN;
 					
 					}
 					
-					else if {
+					else if (ev==1){
 
 						scene = SURROT;
 					
 					}
+
+					/* else if (ev == 3) {
+					 
+					 scene=COIN_TOSS;
+					 
+					}
+
+					else if(ev==4){
+					
+					scene=SHOOTING;
+					
+					}
+					*/
 					
 					WaitTimer(200);
 				
@@ -978,15 +1014,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					
 					}
 					
-					else if{
+					else if(ev==1){
 
 						scene = SURROT;
 				
 					}
+
+					/*
+					
+					else if(ev==2){
+					
+					scene=COIN_TOSS;
+					
+					}
+
+					else if(ev==3){
+					
+					scene=SHOOTING;
+					
+					}
+					
+					*/
 				
 				}
 			
 			}
+			
 			break;
 
 		case JANKEN:
@@ -1012,7 +1065,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				
 					if (timer % 30 < 15) {
 					
-						drawText(WIDTH / 2, HEIGHT * 0.75, "「SPACE」キーでサイコロを止める！", 0, 40, colors.GOLD);
+						drawText(TEXTX, HEIGHT * 0.75, "「SPACE」キーでサイコロを止める！", 0, 40, colors.GOLD);
 					
 					}
 					
@@ -1044,25 +1097,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			
 			else if (dice_state == 1) {
 			
-				DrawRotaGraph(WIDTH / 2, HEIGHT / 2, 0.5, 0.0, NUM[current_dices[0] - 1], TRUE);
+				DrawRotaGraph(TEXTX, HEIGHT / 2, 0.5, 0.0, NUM[current_dices[0] - 1], TRUE);
 
 				if (current_turn == 0) {
 				
 					if (chara[0].isLowHp()) {
 					
-						drawText(WIDTH / 2, HEIGHT * 0.2, "ピンチ！出目が半分になりました", 0, 45, colors.RED);
+						drawText(TEXTX, HEIGHT * 0.2, "ピンチ！出目が半分になりました", 0, 45, colors.RED);
 					
 					}
 					
 					else {
 					
-						drawText(WIDTH / 2, HEIGHT * 0.2, "あなたの出目が決定！", 0, 50, colors.LIGHTGREEN);
+						drawText(TEXTX, HEIGHT * 0.2, "あなたの出目が決定！", 0, 50, colors.LIGHTGREEN);
 					
 					}
 
 					if (timer % 30 < 15) {
 					
-						drawText(WIDTH / 2, HEIGHT * 0.75, "「SPACE」キーで移動開始！", 0, 40, colors.GOLD);
+						drawText(TEXTX, HEIGHT * 0.75, "「SPACE」キーで移動開始！", 0, 40, colors.GOLD);
 					
 					}
 					
@@ -1083,13 +1136,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				
 					if (chara[1].isLowHp()) {
 					
-						drawText(WIDTH / 2, HEIGHT * 0.2, "あいてはピンチ！出目が半分に", 0, 45, colors.RED);
+						drawText(TEXTX, HEIGHT * 0.2, "あいてはピンチ！出目が半分に", 0, 45, colors.RED);
 					
 					}
 					
 					else {
 					
-						drawText(WIDTH / 2, HEIGHT * 0.2, "あいての出目が決定！", 0, 50, colors.RED);
+						drawText(TEXTX, HEIGHT * 0.2, "あいての出目が決定！", 0, 50, colors.RED);
 					
 					}
 
@@ -1121,7 +1174,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				
 					if (timer % 30 < 15) {
 					
-						drawText(WIDTH / 2, HEIGHT * 0.75, "「SPACE」キーでスロットを止める！", 0, 40, colors.GOLD);
+						drawText(TEXTX, HEIGHT * 0.75, "「SPACE」キーでスロットを止める！", 0, 40, colors.GOLD);
 					
 					}
 					
@@ -1166,18 +1219,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				
 					if (!slot_hp_applied) {
 					
-						chara[current_turn].addHp(20);
+						chara[current_turn].addHp(CHAHP);
 						slot_hp_applied = true;
 					
 					}
 				
-					drawText(WIDTH / 2, HEIGHT * 0.2, "大当り！数字が全揃い！ (HP+20回復)", 0, 45, colors.GOLD);
+					char hp_res[64];
+					sprintf_s(hp_res, "大当り！数字が全揃い！ (HP%d回復)", CHAHP);
 				
 				}
 				
 				else {
 				
-					drawText(WIDTH / 2, HEIGHT * 0.2, "残念！揃わなかった...", 0, 45, colors.WHITE);
+					drawText(TEXTX, HEIGHT * 0.2, "残念！揃わなかった...", 0, 45, colors.WHITE);
 				
 				}
 
@@ -1185,7 +1239,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				
 					if (timer % 30 < 15) {
 					
-						drawText(WIDTH / 2, HEIGHT * 0.75, "「SPACE」キーでPLAYへ戻る", 0, 40, colors.GOLD);
+						drawText(TEXTX, HEIGHT * 0.75, "「SPACE」キーでPLAYへ戻る", 0, 40, colors.GOLD);
 					
 					}
 
@@ -1223,33 +1277,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			
 			DrawGraph(0, 0, img[0], FALSE);
 
-			drawText(WIDTH / 2, HEIGHT * 0.2, "GAME OVER - 結果発表", 0, 60, colors.GOLD);
+			drawText(TEXTX, HEIGHT * 0.2, "GAME OVER - 結果発表", 0, 60, colors.GOLD);
 
 			char hp_res[64];
 			sprintf_s(hp_res, "最終HP - あなた: %d  |  あいて: %d", chara[0].gethp(), chara[1].gethp());
-			drawText(WIDTH / 2, HEIGHT * 0.4, hp_res, 0, 40, colors.WHITE);
+			drawText(TEXTX, HEIGHT * 0.4, hp_res, 0, 40, colors.WHITE);
 
 			if (chara[0].gethp() > chara[1].gethp()) {
 			
-				drawText(WIDTH / 2, HEIGHT * 0.6, "あなたの勝利！！", 0, 70, colors.LIGHTGREEN);
+				drawText(TEXTX, HEIGHT * 0.6, "あなたの勝利！！", 0, 70, colors.LIGHTGREEN);
 			
 			}
 			
 			else if (chara[0].gethp() < chara[1].gethp()) {
 			
-				drawText(WIDTH / 2, HEIGHT * 0.6, "あいての勝利...", 0, 70, colors.RED);
+				drawText(TEXTX, HEIGHT * 0.6, "あいての勝利...", 0, 70, colors.RED);
 			
 			}
 			
 			else {
 			
-				drawText(WIDTH / 2, HEIGHT * 0.6, "引き分け！", 0, 70, colors.WHITE);
+				drawText(TEXTX, HEIGHT * 0.6, "引き分け！", 0, 70, colors.WHITE);
 			
 			}
 
 			if (timer % 30 < 15) {
 			
-				drawText(WIDTH / 2, HEIGHT * 0.85, "「SPACE」キーでタイトルへ戻る", 0, 40, colors.GOLD);
+				drawText(TEXTX, HEIGHT * 0.85, "「SPACE」キーでタイトルへ戻る", 0, 40, colors.GOLD);
 			
 			}
 
